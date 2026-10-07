@@ -1,0 +1,611 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="M3TechLab - Workshop DevOps + Security">
+  <title>Workshop DevOps + Security</title>
+  <style>
+
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #050914;
+  color: #f4f7fb;
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+}
+body {
+  position: relative;
+}
+.slide {
+  --scale: 1;
+  display: none;
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  padding: 6vh 7vw 7vh;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 85% 8%, #18294a 0, #0b1020 38%, #060a13 100%);
+}
+.slide.active {
+  display: flex;
+  flex-direction: column;
+}
+.kicker {
+  flex: 0 0 auto;
+  margin-bottom: 2.5vh;
+  color: #63b3ff;
+  font-size: calc(14px * var(--scale));
+  font-weight: 800;
+  letter-spacing: .16em;
+}
+h1 {
+  flex: 0 0 auto;
+  max-width: 1250px;
+  margin: 0;
+  color: #f4f7fb;
+  font-size: calc(clamp(38px, 4.3vw, 68px) * var(--scale));
+  line-height: 1.05;
+  letter-spacing: -.045em;
+}
+.content {
+  width: min(1200px, 100%);
+  margin: 0 auto;
+  padding-top: 2.5vh;
+  padding-bottom: 1vh;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transform-origin: center center;
+  font-size: calc(clamp(19px, 1.65vw, 27px) * var(--scale));
+  line-height: 1.4;
+}
+.content p {
+  margin: .45em 0;
+}
+.content h2 {
+  margin: .25em 0;
+  font-size: calc(clamp(27px, 2.7vw, 43px) * var(--scale));
+  line-height: 1.1;
+}
+.content h3 {
+  margin: .35em 0;
+  font-size: calc(clamp(22px, 2.05vw, 32px) * var(--scale));
+}
+.content strong {
+  color: #8de0c0;
+}
+.content ul {
+  margin: .35em 0;
+  padding-left: 1.15em;
+  font-size: calc(clamp(19px, 1.6vw, 26px) * var(--scale));
+  line-height: 1.45;
+}
+.content li { margin: .08em 0; }
+.content pre {
+  width: 100%;
+  margin: .5em auto;
+  padding: 18px 22px;
+  border: 1px solid #2a3854;
+  border-radius: 14px;
+  background: #0d1627;
+  color: #d9e6f5;
+  font: calc(clamp(16px, 1.4vw, 23px) * var(--scale)) / 1.35 Consolas, monospace;
+  white-space: pre-wrap;
+  overflow: hidden;
+}
+.content code {
+  padding: 2px 6px;
+  border-radius: 5px;
+  background: #121d31;
+}
+.content table {
+  width: 100%;
+  margin: .35em auto;
+  border-collapse: collapse;
+  font-size: calc(clamp(16px, 1.35vw, 22px) * var(--scale));
+}
+.content th,
+.content td {
+  padding: 9px 13px;
+  border: 1px solid #30415e;
+  text-align: left;
+  vertical-align: top;
+}
+.content th {
+  background: #15233a;
+  color: #8ecbff;
+}
+.content blockquote {
+  margin: .5em 0;
+  padding: .3em .8em;
+  border-left: 4px solid #63b3ff;
+  background: rgba(99,179,255,.06);
+  color: #d9e6f5;
+  font-size: calc(clamp(22px, 2vw, 34px) * var(--scale));
+}
+.footer {
+  position: absolute;
+  left: 2vw;
+  bottom: 2vh;
+  color: #71809a;
+  font-size: 12px;
+}
+.brand {
+  position: absolute;
+  right: 4vw;
+  bottom: 2vh;
+  color: #52617a;
+  font-size: 12px;
+  letter-spacing: .12em;
+}
+
+  </style>
+</head>
+<body>
+  <section class="slide">
+    <div class="kicker">M3TECHLAB · WORKSHOP</div>
+    <h1>DevOps + Security</h1>
+    <div class="content">
+<h3>Da entrega de software à experimentação de segurança</h3>
+<p><strong>M3TechLab</strong></p>
+    </div>
+    <div class="footer">1 / 32</div>
+    <div class="brand">M3TechLab</div>
+  </section>
+  <section class="slide">
+    <div class="kicker">M3TECHLAB · WORKSHOP</div>
+    <h1>O que vamos entender?</h1>
+    <div class="content">
+<p><strong>DevOps</strong> → fluxo, feedback, aprendizado</p>
+<p><strong>Security</strong> → onde entra no fluxo</p>
+<p><strong>Controles</strong> → SAST, SCA, Secrets, Threat Modeling</p>
+<p><strong>Experimentação</strong> → Security Chaos Engineering</p>
+<p><strong>Prática</strong> → Devici + Aikido</p>
+    </div>
+    <div class="footer">2 / 32</div>
+    <div class="brand">M3TechLab</div>
+  </section>
+  <section class="slide">
+    <div class="kicker">M3TECHLAB · WORKSHOP</div>
+    <h1>Como software chega ao usuário?</h1>
+    <div class="content">
+<pre><code>Ideia → Código → Build → Teste → Deploy → Produção
+                                      ↑
+                                   Feedback</code></pre>
+<p><strong>Objetivo:</strong> transformar mudanças em valor.</p>
+    </div>
+    <div class="footer">3 / 32</div>
+    <div class="brand">M3TechLab</div>
+  </section>
+  <section class="slide">
+    <div class="kicker">M3TECHLAB · WORKSHOP</div>
+    <h1>Quando o sistema cresce</h1>
+    <div class="content">
+<pre><code>Código + Dependências + Infraestrutura + Pessoas + Integrações
+                           ↓
+                       Complexidade</code></pre>
+<p>A pergunta muda para:</p>
+<blockquote>Como continuar entregando rápido sem perder controle?</blockquote>
+    </div>
+    <div class="footer">4 / 32</div>
+    <div class="brand">M3TechLab</div>
+  </section>
+  <section class="slide">
+    <div class="kicker">M3TECHLAB · WORKSHOP</div>
+    <h1>O que é DevOps?</h1>
+    <div class="content">
+<p>DevOps não é uma ferramenta ou produto.</p>
+<p>É uma forma de <strong>organizar o trabalho</strong> para melhorar a entrega de software.</p>
+<p><strong>Foco:</strong> fluxo entre desenvolvimento, operações e demais áreas.</p>
+    </div>
+    <div class="footer">5 / 32</div>
+    <div class="brand">M3TechLab</div>
+  </section>
+  <section class="slide">
+    <div class="kicker">M3TECHLAB · WORKSHOP</div>
+    <h1>O problema: silos</h1>
+    <div class="content">
+<pre><code>Desenvolvimento
+      ↓
+   &quot;Joga&quot;
+      ↓
+   Operações
+      ↓
+  &quot;Devolve&quot;
+      ↓
+Desenvolvimento</code></pre>
+<p>Isso gera <strong>fila, espera, retrabalho e feedback tardio</strong>.</p>
+    </div>
+    <div class="footer">6 / 32</div>
+    <div class="brand">M3TechLab</div>
+  </section>
+  <section class="slide">
+    <div class="kicker">M3TECHLAB · WORKSHOP</div>
+    <h1>As Três Maneiras</h1>
+    <div class="content">
+<h3>1. Fluxo</h3>
+<p>Fazer o trabalho fluir.</p>
+<h3>2. Feedback</h3>
+<p>Descobrir problemas rapidamente.</p>
+<h3>3. Aprendizado</h3>
+<p>Transformar experiência em melhoria.</p>
+    </div>
+    <div class="footer">7 / 32</div>
+    <div class="brand">M3TechLab</div>
+  </section>
+  <section class="slide">
+    <div class="kicker">M3TECHLAB · WORKSHOP</div>
+    <h1>1ª Maneira — Fluxo</h1>
+    <div class="content">
+<pre><code>Código → Build → Teste → Deploy → Produção</code></pre>
+<p>Pergunte:</p>
+<ul><li>Onde está o gargalo?</li>
+<li>Onde existe trabalho manual?</li>
+<li>Onde há filas?</li>
+<li>Onde há lotes grandes?</li></ul>
+<p><strong>Pare de começar. Comece a terminar.</strong></p>
+    </div>
+    <div class="footer">8 / 32</div>
+    <div class="brand">M3TechLab</div>
+  </section>
+  <section class="slide">
+    <div class="kicker">M3TECHLAB · WORKSHOP</div>
+    <h1>2ª Maneira — Feedback</h1>
+    <div class="content">
+<p>Quanto mais tarde descobrimos um problema, maior tende a ser o custo.</p>
+<pre><code>Código → Teste → Deploy → Produção
+   ↑                         │
+   └──────── Feedback ───────┘</code></pre>
+<p><strong>Security também precisa gerar feedback.</strong></p>
+    </div>
+    <div class="footer">9 / 32</div>
+    <div class="brand">M3TechLab</div>
+  </section>
+  <section class="slide">
+    <div class="kicker">M3TECHLAB · WORKSHOP</div>
+    <h1>3ª Maneira — Aprendizado</h1>
+    <div class="content">
+<pre><code>Executar → Observar → Aprender → Melhorar
+                         ↑          │
+                         └──────────┘</code></pre>
+<p>Não basta detectar.</p>
+<p><strong>Precisamos aprender com o resultado.</strong></p>
+    </div>
+    <div class="footer">10 / 32</div>
+    <div class="brand">M3TechLab</div>
+  </section>
+  <section class="slide">
+    <div class="kicker">M3TECHLAB · WORKSHOP</div>
+    <h1>Security não começa no Deploy</h1>
+    <div class="content">
+<pre><code>Requisitos → Arquitetura → Código → Build
+                                      ↓
+Tests → Deploy → Produção → Monitoramento</code></pre>
+<p>Security pode acompanhar todo o fluxo.</p>
+    </div>
+    <div class="footer">11 / 32</div>
+    <div class="brand">M3TechLab</div>
+  </section>
+  <section class="slide">
+    <div class="kicker">M3TECHLAB · WORKSHOP</div>
+    <h1>Onde Security entra?</h1>
+    <div class="content">
+<table><thead><tr><th>Etapa</th><th>Exemplos</th></tr></thead><tbody><tr><td>Arquitetura</td><td>Threat Modeling</td></tr><tr><td>Código</td><td>SAST, Secrets</td></tr><tr><td>Dependências</td><td>SCA</td></tr><tr><td>Infraestrutura</td><td>IaC, Container</td></tr><tr><td>Produção</td><td>DAST, API Security, Monitoring</td></tr><tr><td>Operação</td><td>Detection, Response, Testing</td></tr></tbody></table>
+<p><strong>Segurança vira feedback do fluxo.</strong></p>
+    </div>
+    <div class="footer">12 / 32</div>
+    <div class="brand">M3TechLab</div>
+  </section>
+  <section class="slide">
+    <div class="kicker">M3TECHLAB · WORKSHOP</div>
+    <h1>Que problemas podemos encontrar?</h1>
+    <div class="content">
+<table><thead><tr><th>Problema</th><th>Exemplo</th></tr></thead><tbody><tr><td>Código vulnerável</td><td>SQL Injection</td></tr><tr><td>Dependência vulnerável</td><td>CVE</td></tr><tr><td>Segredo exposto</td><td>API Key no Git</td></tr><tr><td>Configuração insegura</td><td>Recurso público</td></tr><tr><td>Arquitetura vulnerável</td><td>Trust boundary</td></tr><tr><td>Controle ineficaz</td><td>Alerta não dispara</td></tr></tbody></table>
+<p>Cada problema pede um controle diferente.</p>
+    </div>
+    <div class="footer">13 / 32</div>
+    <div class="brand">M3TechLab</div>
+  </section>
+  <section class="slide">
+    <div class="kicker">M3TECHLAB · WORKSHOP</div>
+    <h1>SAST</h1>
+    <div class="content">
+<p><strong>Static Application Security Testing</strong></p>
+<p>Analisa o código sem executar a aplicação.</p>
+<pre><code>Código → SAST → Possível vulnerabilidade</code></pre>
+<p><strong>Pergunta:</strong> há padrões vulneráveis no código?</p>
+    </div>
+    <div class="footer">14 / 32</div>
+    <div class="brand">M3TechLab</div>
+  </section>
+  <section class="slide">
+    <div class="kicker">M3TECHLAB · WORKSHOP</div>
+    <h1>SCA</h1>
+    <div class="content">
+<p><strong>Software Composition Analysis</strong></p>
+<p>Analisa bibliotecas e dependências.</p>
+<pre><code>Aplicação → Dependências → SCA → Riscos conhecidos</code></pre>
+<p>Pode revelar <strong>vulnerabilidades, versões e licenças</strong>.</p>
+    </div>
+    <div class="footer">15 / 32</div>
+    <div class="brand">M3TechLab</div>
+  </section>
+  <section class="slide">
+    <div class="kicker">M3TECHLAB · WORKSHOP</div>
+    <h1>SAST ≠ SCA</h1>
+    <div class="content">
+<table><thead><tr><th></th><th>SAST</th><th>SCA</th></tr></thead><tbody><tr><td>Analisa</td><td>Código</td><td>Dependências</td></tr><tr><td>Exemplo</td><td>SQL Injection</td><td>CVE</td></tr><tr><td>Pergunta</td><td>Como escrevemos?</td><td>O que incorporamos?</td></tr></tbody></table>
+<p>Uma aplicação pode ter código próprio seguro e ainda usar uma dependência vulnerável.</p>
+    </div>
+    <div class="footer">16 / 32</div>
+    <div class="brand">M3TechLab</div>
+  </section>
+  <section class="slide">
+    <div class="kicker">M3TECHLAB · WORKSHOP</div>
+    <h1>Secrets Detection</h1>
+    <div class="content">
+<p>E se uma credencial estiver no código?</p>
+<pre><code>Git → Secrets Detection
+       ↓
+API Key / Token / Credential</code></pre>
+<p><strong>Objetivo:</strong> detectar segredos expostos antes que virem incidente.</p>
+    </div>
+    <div class="footer">17 / 32</div>
+    <div class="brand">M3TechLab</div>
+  </section>
+  <section class="slide">
+    <div class="kicker">M3TECHLAB · WORKSHOP</div>
+    <h1>Threat Modeling</h1>
+    <div class="content">
+<p>Antes de procurar vulnerabilidades, pergunte:</p>
+<blockquote><strong>Como este sistema pode ser atacado?</strong></blockquote>
+<pre><code>Usuário → Aplicação → API → Banco</code></pre>
+<p>Procure <strong>ameaças, trust boundaries e caminhos de ataque</strong>.</p>
+    </div>
+    <div class="footer">18 / 32</div>
+    <div class="brand">M3TechLab</div>
+  </section>
+  <section class="slide">
+    <div class="kicker">M3TECHLAB · WORKSHOP</div>
+    <h1>STRIDE</h1>
+    <div class="content">
+<p>Uma forma de organizar ameaças:</p>
+<ul><li><strong>S</strong> — Spoofing — Falsificação de identidade</li>
+<li><strong>T</strong> — Tampering — Adulteração</li>
+<li><strong>R</strong> — Repudiation — Repúdio</li>
+<li><strong>I</strong> — Information Disclosure — Divulgação de informações</li>
+<li><strong>D</strong> — Denial of Service — Negação de serviço</li>
+<li><strong>E</strong> — Elevation of Privilege — Elevação de privilégio</li></ul>
+<p>Threat Modeling acontece antes de depender apenas de scanners.</p>
+    </div>
+    <div class="footer">19 / 32</div>
+    <div class="brand">M3TechLab</div>
+  </section>
+  <section class="slide">
+    <div class="kicker">M3TECHLAB · WORKSHOP</div>
+    <h1>Encontrar não é suficiente</h1>
+    <div class="content">
+<pre><code>Threat Modeling
+      ↓
+SAST / SCA / Secrets
+      ↓
+    Corrigir</code></pre>
+<p>Nova pergunta:</p>
+<blockquote><strong>Como sabemos que nossos controles funcionam?</strong></blockquote>
+    </div>
+    <div class="footer">20 / 32</div>
+    <div class="brand">M3TechLab</div>
+  </section>
+  <section class="slide">
+    <div class="kicker">M3TECHLAB · WORKSHOP</div>
+    <h1>Security Chaos Engineering</h1>
+    <div class="content">
+<p><strong>Não assumir. Experimentar.</strong></p>
+<p>Criamos uma hipótese, provocamos uma condição controlada e observamos o resultado.</p>
+<p><strong>Objetivo:</strong> descobrir falhas nos controles e aumentar a confiança na segurança do sistema.</p>
+    </div>
+    <div class="footer">21 / 32</div>
+    <div class="brand">M3TechLab</div>
+  </section>
+  <section class="slide">
+    <div class="kicker">M3TECHLAB · WORKSHOP</div>
+    <h1>Teste × Experimento</h1>
+    <div class="content">
+<h3>Teste</h3>
+<p>Valida um resultado conhecido.</p>
+<h3>Experimento</h3>
+<p>Busca descobrir algo sobre o comportamento do sistema.</p>
+<pre><code>Hipótese → Condição controlada → Observação → Aprendizado</code></pre>
+    </div>
+    <div class="footer">22 / 32</div>
+    <div class="brand">M3TechLab</div>
+  </section>
+  <section class="slide">
+    <div class="kicker">M3TECHLAB · WORKSHOP</div>
+    <h1>Exemplo de Security Chaos</h1>
+    <div class="content">
+<p><strong>Hipótese:</strong></p>
+<blockquote>Se ocorrer um evento suspeito, conseguiremos detectá-lo.</blockquote>
+<p>Verificamos:</p>
+<p><strong>Log → Alerta → Detecção → Resposta</strong></p>
+<p>Se algo falhar, temos um aprendizado concreto.</p>
+    </div>
+    <div class="footer">23 / 32</div>
+    <div class="brand">M3TechLab</div>
+  </section>
+  <section class="slide">
+    <div class="kicker">M3TECHLAB · WORKSHOP</div>
+    <h1>Game Day</h1>
+    <div class="content">
+<p>Uma forma controlada de experimentar.</p>
+<p><strong>Antes:</strong> hipótese, cenário e limites</p>
+<p><strong>Durante:</strong> executar, observar e registrar</p>
+<p><strong>Depois:</strong> comparar, corrigir e repetir</p>
+    </div>
+    <div class="footer">24 / 32</div>
+    <div class="brand">M3TechLab</div>
+  </section>
+  <section class="slide">
+    <div class="kicker">M3TECHLAB · WORKSHOP</div>
+    <h1>Segurança também é um sistema</h1>
+    <div class="content">
+<pre><code>Código → CI/CD → Artefato → Infra → Aplicação
+                                      ↓
+Monitoramento ← Detecção ← Resposta</code></pre>
+<p>A falha pode estar no <strong>código, processo, configuração, integração ou detecção</strong>.</p>
+    </div>
+    <div class="footer">25 / 32</div>
+    <div class="brand">M3TechLab</div>
+  </section>
+  <section class="slide">
+    <div class="kicker">M3TECHLAB · WORKSHOP</div>
+    <h1>O pipeline também é superfície de ataque</h1>
+    <div class="content">
+<pre><code>Developer → Git → CI → Artifact → Deploy → Production</code></pre>
+<p>O pipeline pode acessar:</p>
+<p><strong>código · credenciais · artefatos · ambientes · infraestrutura</strong></p>
+<p>Por isso, o próprio pipeline precisa de segurança.</p>
+    </div>
+    <div class="footer">26 / 32</div>
+    <div class="brand">M3TechLab</div>
+  </section>
+  <section class="slide">
+    <div class="kicker">M3TECHLAB · WORKSHOP</div>
+    <h1>Nosso laboratório</h1>
+    <div class="content">
+<pre><code>GitHub
+  ↓
+  CI
+  ├── SAST
+  ├── SCA
+  └── Secrets
+  ↓
+Build → Deploy → Application</code></pre>
+<p>Agora conectamos <strong>conceito → ferramenta → prática</strong>.</p>
+    </div>
+    <div class="footer">27 / 32</div>
+    <div class="brand">M3TechLab</div>
+  </section>
+  <section class="slide">
+    <div class="kicker">M3TECHLAB · WORKSHOP</div>
+    <h1>Demo 1 — Threat Modeling</h1>
+    <div class="content">
+<p><strong>Problema:</strong> como identificar ameaças antes de depender de scanners?</p>
+<p><strong>Conceito:</strong> Threat Modeling</p>
+<p><strong>Ferramenta:</strong> Devici</p>
+<p>Vamos observar:</p>
+<p><strong>arquitetura · trust boundaries · ameaças · mitigations</strong></p>
+    </div>
+    <div class="footer">28 / 32</div>
+    <div class="brand">M3TechLab</div>
+  </section>
+  <section class="slide">
+    <div class="kicker">M3TECHLAB · WORKSHOP</div>
+    <h1>Demo 2 — Application Security</h1>
+    <div class="content">
+<p><strong>Problema:</strong> como encontrar problemas no software antes da produção?</p>
+<p><strong>Conceitos:</strong> SAST · SCA · Secrets</p>
+<p><strong>Ferramenta:</strong> Aikido</p>
+    </div>
+    <div class="footer">29 / 32</div>
+    <div class="brand">M3TechLab</div>
+  </section>
+  <section class="slide">
+    <div class="kicker">M3TECHLAB · WORKSHOP</div>
+    <h1>Depois do scanner...</h1>
+    <div class="content">
+<pre><code>Encontrar → Priorizar → Corrigir → Validar → Monitorar</code></pre>
+<p>E depois?</p>
+<p><strong>Experimentar.</strong></p>
+<p>Segurança não termina quando o scanner gera um resultado.</p>
+    </div>
+    <div class="footer">30 / 32</div>
+    <div class="brand">M3TechLab</div>
+  </section>
+  <section class="slide">
+    <div class="kicker">M3TECHLAB · WORKSHOP</div>
+    <h1>A ideia central</h1>
+    <div class="content">
+<pre><code>Conceito
+   ↓
+Ferramenta
+   ↓
+Experimento
+   ↓
+Aprendizado
+   ↺</code></pre>
+<p><strong>DevOps melhora o fluxo.</strong></p>
+<p><strong>Security adiciona feedback.</strong></p>
+<p><strong>Experimentação testa nossas premissas.</strong></p>
+    </div>
+    <div class="footer">31 / 32</div>
+    <div class="brand">M3TechLab</div>
+  </section>
+  <section class="slide">
+    <div class="kicker">M3TECHLAB · WORKSHOP</div>
+    <h1>Agora vamos para as demos</h1>
+    <div class="content">
+<h2>DevOps + Security</h2>
+<p><strong>M3TechLab</strong></p>
+    </div>
+    <div class="footer">32 / 32</div>
+    <div class="brand">M3TechLab</div>
+  </section>
+
+  <div id="counter">1 / 32</div>
+
+  <script>
+
+const slides = [...document.querySelectorAll(".slide")];
+const counter = document.getElementById("counter");
+let current = 0;
+
+function fitSlide(slide) {
+  slide.style.setProperty("--scale", "1");
+  const content = slide.querySelector(".content");
+  if (!content) return;
+
+  let scale = 1;
+  const minScale = 0.70;
+
+  for (let n = 0; n < 18; n++) {
+    const overflow = content.scrollHeight > content.clientHeight + 2;
+    if (!overflow || scale <= minScale) break;
+    scale -= 0.02;
+    slide.style.setProperty("--scale", scale.toFixed(2));
+  }
+}
+
+function show(index) {
+  current = (index + slides.length) % slides.length;
+  slides.forEach((slide, i) => slide.classList.toggle("active", i === current));
+  counter.textContent = `${current + 1} / ${slides.length}`;
+  requestAnimationFrame(() => fitSlide(slides[current]));
+}
+
+document.addEventListener("keydown", (event) => {
+  if (["ArrowRight", " ", "PageDown"].includes(event.key)) {
+    event.preventDefault();
+    show(current + 1);
+  }
+  if (["ArrowLeft", "PageUp"].includes(event.key)) {
+    event.preventDefault();
+    show(current - 1);
+  }
+  if (event.key === "Home") show(0);
+  if (event.key === "End") show(slides.length - 1);
+});
+
+window.addEventListener("resize", () => fitSlide(slides[current]));
+show(0);
+
+  </script>
+</body>
+</html>
